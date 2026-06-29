@@ -25,7 +25,6 @@ def write_frames_png(nifti_path, out_dir):
     Returns:
         int: Number of PNGs written (equals the Z depth of the volume).
     """
-<<<<<<< HEAD
     out_dir = Path(out_dir)
     out_dir.mkdir(parents=True, exist_ok=True)
 
@@ -39,9 +38,6 @@ def write_frames_png(nifti_path, out_dir):
         Image.fromarray(rgb, mode="RGB").save(frame_path)
 
     return windowed.shape[2]
-=======
-    pass
->>>>>>> 1a232303f6b873212e1640fd035fe2c6fa513cdc
 
 
 def frames_to_arrays(frames_dir):
@@ -57,7 +53,6 @@ def frames_to_arrays(frames_dir):
     Returns:
         np.ndarray: uint8 array of shape (Z, H, W, 3).
     """
-<<<<<<< HEAD
     frames_dir = Path(frames_dir)
     frame_paths = sorted(frames_dir.glob("*.png"))
 
@@ -66,6 +61,3 @@ def frames_to_arrays(frames_dir):
 
     frames = [np.array(Image.open(path).convert("RGB"), dtype=np.uint8) for path in frame_paths]
     return np.stack(frames, axis=0)
-=======
-    pass
->>>>>>> 1a232303f6b873212e1640fd035fe2c6fa513cdc

@@ -19,7 +19,6 @@ def bbox_from_mask(mask2d, pad=4):
     Returns:
         np.ndarray | None: float32 [x0, y0, x1, y1], or None if mask is empty.
     """
-<<<<<<< HEAD
     mask2d = np.asarray(mask2d)
     ys, xs = np.nonzero(mask2d)
     if len(xs) == 0 or len(ys) == 0:
@@ -31,9 +30,6 @@ def bbox_from_mask(mask2d, pad=4):
     x1 = min(mask2d.shape[1] - 1, xs.max() + pad)
 
     return np.array([x0, y0, x1, y1], dtype=np.float32)
-=======
-    pass
->>>>>>> 1a232303f6b873212e1640fd035fe2c6fa513cdc
 
 
 def best_start_slice(label_vol, organ_id):
@@ -56,13 +52,9 @@ def best_start_slice(label_vol, organ_id):
     Raises:
         ValueError: If organ_id is not present anywhere in label_vol.
     """
-<<<<<<< HEAD
     organ_mask = (np.asarray(label_vol) == organ_id)
     if not np.any(organ_mask):
         raise ValueError(f"Organ id {organ_id} is not present in the label volume")
 
     slice_counts = np.sum(organ_mask, axis=(0, 1))
     return int(np.argmax(slice_counts))
-=======
-    pass
->>>>>>> 1a232303f6b873212e1640fd035fe2c6fa513cdc
