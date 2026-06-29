@@ -41,12 +41,48 @@ class BTCVSliceDataset(Dataset):
 
     def __init__(self, cases, organ_id, image_dir, label_dir, image_size=1024):
         self.samples = []
-        # TODO: implement as described above
-        pass
+        self.image_size = image_size
 
+        image_dir = Path(image_dir)
+        label_dir = Path(label_dir)
+
+        for case in cases:
+            image_path = image_dir / f"{case}.nii"
+            label_path = label_dir / f"{case.replace('img', 'label')}.nii"
+
+            image_vol, _, _ = load_volume(image_path)
+            label_vol, _, _ = load_volume(label_path)
+
+            windowed_img = apply_hu_window(image_vol, as_uint8=True)
+
+            for z in range(windowed_img.shape[2]):
+                if not np.any(label_vol[:, :, z] == organ_id):
+                    continue
+
+                img_slice = windowed_img[:, :, z]
+                img_rgb = np.repeat(img_slice[..., None], 3, axis=2)
+
+                img_pil = Image.fromarray(img_rgb, mode="RGB")
+                resized_img = np.array(img_pil.resize((image_size, image_size), Image.BILINEAR))
+
+                gt_mask = (label_vol[:, :, z] == organ_id).astype(np.uint8)
+                gt_pil = Image.fromarray(gt_mask, mode="L")
+                resized_gt = np.array(gt_pil.resize((image_size, image_size), Image.NEAREST))
+
+                bbox = bbox_from_mask(resized_gt)
+                if bbox is None:
+                    continue
+
+                self.samples.append((resized_img, resized_gt, bbox.astype(np.float32)))
+    
     def __len__(self):
         return len(self.samples)
 
     def __getitem__(self, idx):
-        # TODO: unpack self.samples[idx] and return tensors as specified above
-        pass
+        img_array, gt_array, box_array = self.samples[idx]
+
+        img_tensor = torch.from_numpy(img_array.astype(np.float32) / 255.0)
+        gt_tensor = torch.from_numpy(gt_array.astype(np.float32))
+        box_tensor = torch.from_numpy(box_array.astype(np.float32))
+
+        return img_tensor, gt_tensor, box_tensor
